@@ -1,10 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wander lust</title>
-</head>
+<%layout("/layouts/boilerplate.ejs")%>
 <body>
     <h2>More details :</h2>
     <ul>
@@ -15,11 +9,10 @@
         <li><%=listing.country%></li>
     </ul>
     <form method="get" action="/listings/<%=listing._id%>/edit">
-        <button>Edit</button>
+        <button class="btn btn-dark">Edit</button>
     </form>
     <br><BR>
     <form method="POST" action="/listings/<%=listing._id%>?_method=DELETE">
         <button>DELETE</button>
     </form>
 </body>
-</html>
