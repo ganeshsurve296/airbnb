@@ -1,9 +1,9 @@
 body{
     background-color: rgb(222, 246, 246);
     font-family: 'Plus Jakarta Sans', sans-serif;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    height: 100vh;
 }
 
 .navbar{
@@ -72,6 +72,28 @@ body{
     opacity: 0.1;
     background-color: white;
 }
-.container{
+.container-fluid{
     flex:1;
+    
+}
+
+.add-new{
+    background-color: #fe424d;
+    border:none;
+}
+.edit-btn{
+    background-color: #fe424d;
+    border:none;
+}
+
+.show-img{
+    height: 30vh;
+    border-radius: none!important;
+}
+.btns{
+    display:flex;
+}
+.show-card{
+    background-color: rgb(222, 246, 246);
+    border: none;
 }
