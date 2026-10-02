@@ -3,78 +3,34 @@ const router = express.Router();
 const wrapAsync = require("../utils/wrapAsync.js");
 const Listing = require("../models/listing.js");
 const { isLoggedIn, isOwner, validateListing } = require("../middleware.js");
+const listingController = require("../controller/listings.js");
+const multer  = require('multer')
+const {storage} = require("../cloudConfig.js");
+const upload = multer({storage});
 
 
+router
+  .route("/")
+  .get(wrapAsync(listingController.index))
+  .post(isLoggedIn,upload.single('listing[image][url]'), wrapAsync(listingController.createListing));
+  
+  // new Rooute
+router.get("/new", isLoggedIn, listingController.renderNewForm);
 
-// LISTING /INDEX ROUTE
-router.get("/", async (req, res) => {
-    const allListings = await Listing.find({});
-    res.render("listings/index.ejs", { allListings });
-})
+router
+  .route("/:id")
+  .get(wrapAsync(listingController.showListing))
+  .put( isLoggedIn, isOwner,upload.single('listing[image][url]'), validateListing, wrapAsync(listingController.updateListing))
+  .delete( isLoggedIn, isOwner, wrapAsync(listingController.deleteListing));
 
-// new Rooute
-router.get("/new", isLoggedIn, (req, res) => {
-    res.render("listings/new.ejs");
-})
 // CREATE 
-router.post("/", isLoggedIn, validateListing, wrapAsync(async (req, res, next) => {
-
-    let newListing = new Listing(req.body.listing);
-    newListing.owner = req.user._id;
-    await newListing.save();
-
-    req.flash("success", "New listing created");
-
-    res.redirect("/listings");
 
 
-}));
-
-router.get("/:id/edit", isLoggedIn, isOwner, wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let listing = await Listing.findById(id)
-    if (!listing) {
-        req.flash("error", "Listing you searched Does not exist !");
-        res.redirect("/listings");
-        return;
-    }
-    res.render("listings/edit.ejs", { listing });
-}));
+router.get("/:id/edit", isLoggedIn, isOwner, wrapAsync(listingController.editListing));
 // update
-router.put("/:id", isLoggedIn, isOwner, validateListing, wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let newListing = req.body.listing;
 
-    await Listing.findByIdAndUpdate(id, { ...newListing });
-    req.flash("success", " listing updated");
-    res.redirect(`/listings/${id}`);
 
-}));
 
-//DELETE
-router.delete("/:id", isLoggedIn, isOwner, wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    await Listing.findByIdAndDelete(id);
-    req.flash("success", " listing deleted");
-    res.redirect("/listings");
-}))
-
-router.get("/:id", wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id)
-        .populate({
-            path: "reviews",
-            populate: {
-                path: "author"
-            }
-        })
-        .populate("owner"); if (!listing) {
-            req.flash("error", "Listing you searched Does not exist !");
-            res.redirect("/listings");
-            return;
-        }
-    res.render("listings/show.ejs", { listing });
-}));
 
 
 

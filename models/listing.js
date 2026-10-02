@@ -5,38 +5,46 @@ const Schema = mongoose.Schema;
 const listingSchema = new Schema({
     title: {
         type: String,
-        required: true  
+        required: true
     },
     description: String,
 
     image: {
-        filename: String,
-        url: {
-            type: String,
-            default: "https://images.unsplash.com/photo-1592093397571-36323190f372"
-        }
+        url: String,
+        filename: String
     },
 
     price: Number,
     location: String,
     country: String,
-    reviews:[
+    reviews: [
         {
-            type:Schema.Types.ObjectId,
-            ref : "Review"
+            type: Schema.Types.ObjectId,
+            ref: "Review"
         }
     ],
-    owner:{
-        type : Schema.Types.ObjectId,
-        ref:"User"
+    owner: {
+        type: Schema.Types.ObjectId,
+        ref: "User"
     },
+    geometry: {
+        type: {
+            type: String, // Don't do `{ location: { type: String } }`
+            enum: ['Point'], // 'location.type' must be 'Point'
+            required: true
+        },
+        coordinates: {
+            type: [Number],
+            required: true
+        }
+    }
 });
 
-listingSchema.post("findOneAndDelete",async (listing)=>{
-    if(listing){
-        await Review.deleteMany({_id : {$in : listing.reviews}})
+listingSchema.post("findOneAndDelete", async (listing) => {
+    if (listing) {
+        await Review.deleteMany({ _id: { $in: listing.reviews } })
     }
 })
 
-const Listing = mongoose.model("Listing",listingSchema);
+const Listing = mongoose.model("Listing", listingSchema);
 module.exports = Listing;

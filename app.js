@@ -1,3 +1,6 @@
+if(process.env.NODE_ENV != "production"){
+    require('dotenv').config();
+}
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -7,6 +10,7 @@ const methodOverride = require("method-override");
 const expressErrors = require("./utils/expressErrors.js");
 
 const session = require("express-session");
+const MongoStore = require('connect-mongo').default;
 const flash = require("connect-flash");
 
 const passport = require("passport");
@@ -29,6 +33,12 @@ const userRoute = require("./routes/user.js");
 
 const port = 8080;
 
+const dbUrl=process.env.ATLASDB_URL;
+
+const dns = require("dns");
+
+dns.setServers(["1.1.1.1","8.8.8.8"])
+
 main().then(() => {
     console.log("connection succesful");
 
@@ -38,12 +48,24 @@ main().then(() => {
 })
 
 async function main() {
-    await mongoose.connect("mongodb://127.0.0.1:27017/wonderlust");
+    await mongoose.connect(dbUrl);
 }
 
+const store = MongoStore.create({
+    mongoUrl:dbUrl,
+    crypto :{
+        secret:process.env.SECRET,
+    },
+    touchAfter:24*3600
+})
+
+store.on("error",()=>{
+    console.log("Error in mongo session store",err);
+})
 
 const sessionOptions = {
-    secret : "mysupersecreatstring" , 
+    store,
+    secret : process.env.SECRET , 
     resave:false,
     saveUninitialized:true,
     cookie:{
@@ -53,6 +75,8 @@ const sessionOptions = {
     },
     
 }
+
+
 
 app.use(session(sessionOptions));
 app.use(flash());
@@ -86,12 +110,6 @@ app.use("/listings",listingsRoute)
 app.use("/listings/:id/reviews",reviewsRoute);
 
 app.use("/",userRoute);
-
-
-app.get("/", (req, res) => {
-    res.send("this is root");
-})
-
 
 app.all("/{*splat}", (req, res, next) => {
     next(new expressErrors(404, "Page not found !"));

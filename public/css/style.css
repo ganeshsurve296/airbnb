@@ -13,7 +13,7 @@ body{
 .navbar a{
     color: #222222;
 }
-.fa-solid{
+.fa-compass{
     color : #fe424d;
     font-size: 2rem;
 }
@@ -96,4 +96,11 @@ body{
 .show-card{
     background-color: rgb(222, 246, 246);
     border: none;
+}
+
+/* maps */
+
+#map{
+    height: 400px;
+    width: 80vh;
 }

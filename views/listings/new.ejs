@@ -5,7 +5,7 @@
             <div class="col-md-8">
                 <br><br>
                 <h3>Enter details to Add </h3>
-                <form method="POST" action="/listings" novalidate class="needs-validation">
+                <form method="POST" action="/listings" novalidate class="needs-validation" enctype="multipart/form-data">
                     <div class="mb-3">
                         <label for="title" class="form-label">Title</label>
                         <input name="listing[title]" placeholder="Enter title" class="form-control" required>
@@ -19,8 +19,8 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="image" class="form-label">Image</label>
-                        <input name="listing[image][url]" placeholder="Enter image link/url" class="form-control">
+                        <label for="image" class="form-label">Upload Image listing</label>
+                        <input name="listing[image][url]" type = "file" placeholder="Enter image link/url" class="form-control">
 
                     </div>
                     <div class="mb-3">
