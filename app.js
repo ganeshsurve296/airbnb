@@ -111,6 +111,10 @@ app.use("/listings/:id/reviews",reviewsRoute);
 
 app.use("/",userRoute);
 
+app.get("/", (req, res) => {
+    res.redirect("/listings");
+});
+
 app.all("/{*splat}", (req, res, next) => {
     next(new expressErrors(404, "Page not found !"));
 })
